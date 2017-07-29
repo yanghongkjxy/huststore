@@ -14,8 +14,8 @@ nginx 配置文件
         "listen": 8082,
         "keepalive_timeout": 540,
         "keepalive": 32768,
-        "http_basic_auth_file": "/data/hustdbha/conf/htpasswd",
-        "nginx_root": "/data/hustdbha/html",
+        "http_basic_auth_file": "/opt/huststore/hustdbha/conf/htpasswd",
+        "nginx_root": "/opt/huststore/hustdbha/html",
         "main_conf":
         [
             ["zlog_mdc", "sync_dir"],
@@ -31,7 +31,6 @@ nginx 配置文件
             ["fetch_connect_timeout", "2s"],
             ["fetch_send_timeout", "60s"],
             ["fetch_read_timeout", "60s"],
-            ["fetch_timeout", "60s"],
             ["fetch_buffer_size", "64m"],
             ["sync_port", "8089"],
             ["sync_status_uri", "/sync_status"],
@@ -173,7 +172,6 @@ nginx 配置文件
 * `fetch_connect_timeout`：`ngx_http_fetch` 连接的超时时间，可根据网络环境配置合适的值
 * `fetch_send_timeout`：`ngx_http_fetch` 发送数据包的超时时间，可根据网络环境配置合适的值
 * `fetch_read_timeout`：`ngx_http_fetch` 接收数据包的超时时间，可根据网络环境配置合适的值
-* `fetch_timeout`：`ngx_http_fetch` 和 `hustmq` 进行网络通讯的最大超时时间，可根据网络环境配置合适的值
 * `fetch_buffer_size`：`ngx_http_fetch` 收发数据包的缓冲区大小，建议保持默认值
 
 `main_conf` 中的如下字段均用于和 `sync_server` 的通信：
@@ -277,7 +275,6 @@ nginx 配置文件
             fetch_connect_timeout     2s;
             fetch_send_timeout        60s;
             fetch_read_timeout        60s;
-            fetch_timeout             60s;
             fetch_buffer_size         64m;
             sync_port                 8089;
             sync_status_uri           /sync_status;
@@ -286,192 +283,192 @@ nginx 配置文件
             binlog_uri                /hustdb/binlog;
 
             location /status.html {
-                root /data/hustdbha/html;
+                root /opt/huststore/hustdbha/html;
             }
 
             location /put {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /get {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /get2 {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /del {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /exist {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /keys {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hset {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hget {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hget2 {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hdel {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hexist {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /hkeys {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /sadd {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /srem {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /sismember {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /sismember2 {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /smembers {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zadd {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zrem {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zismember {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zscore {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zscore2 {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zrangebyrank {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /zrangebyscore {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /stat {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /stat_all {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /file_count {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /peer_count {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /sync_status {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /sync_alive {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /get_table {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /set_table {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/exist {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/get {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/ttl {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/put {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/append {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/del {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/expire {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/persist {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hexist {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hget {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hset {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hdel {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hincrby {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
             location /cache/hincrbyfloat {
                 hustdb_ha;
-                http_basic_auth_file /data/hustdbha/conf/htpasswd;
+                http_basic_auth_file /opt/huststore/hustdbha/conf/htpasswd;
             }
 
             location /hustdb/put {
@@ -938,6 +935,6 @@ nginx 配置文件
 * 如何禁用 `http basic authentication` ？  
 配置 `nginx.json` 时，直接删掉 `"http_basic_auth_file"` 字段以及相应的值，利用 `genconf.py` 重新生成 `nginx.conf` 即可
 
-[上一级](conf.md)
+[上一页](conf.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

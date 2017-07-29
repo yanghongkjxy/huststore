@@ -4,7 +4,6 @@
 #include <ngx_core.h>
 #include <ngx_http.h>
 #include <ngx_http_addon_def.h>
-#include <ngx_http_peer_selector.h>
 #include <ngx_http_utils_module.h>
 #include <ngx_http_fetch.h>
 #include <c_dict.h>
@@ -54,7 +53,6 @@ typedef struct
     ngx_int_t fetch_connect_timeout;
     ngx_int_t fetch_send_timeout;
     ngx_int_t fetch_read_timeout;
-    ngx_int_t fetch_timeout;
     ssize_t fetch_buffer_size;
     ngx_int_t sync_port;
     ngx_str_t sync_status_uri;
@@ -64,6 +62,9 @@ typedef struct
 } ngx_http_hustdb_ha_main_conf_t;
 
 void * hustdb_ha_get_module_main_conf(ngx_http_request_t * r);
+
+ngx_http_upstream_rr_peers_t * ngx_http_get_backends();
+size_t ngx_http_get_backend_count();
 
 ngx_str_t hustdb_ha_make_str(ngx_str_t * val, ngx_http_request_t * r);
 ngx_str_t hustdb_ha_strcat(const ngx_str_t * str, int num, ngx_pool_t * pool);

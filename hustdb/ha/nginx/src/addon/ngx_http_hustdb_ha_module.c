@@ -27,7 +27,6 @@ static char * ngx_http_connection_cache_size(ngx_conf_t * cf, ngx_command_t * cm
 static char * ngx_http_fetch_connect_timeout(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_fetch_send_timeout(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_fetch_read_timeout(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
-static char * ngx_http_fetch_timeout(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_fetch_buffer_size(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_sync_port(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_sync_status_uri(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
@@ -35,7 +34,8 @@ static char * ngx_http_sync_user(ngx_conf_t * cf, ngx_command_t * cmd, void * co
 static char * ngx_http_sync_passwd(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static char * ngx_http_binlog_uri(ngx_conf_t * cf, ngx_command_t * cmd, void * conf);
 static void * ngx_http_hustdb_ha_create_main_conf(ngx_conf_t *cf);
-char * ngx_http_hustdb_ha_init_main_conf(ngx_conf_t * cf, void * conf);
+static char * ngx_http_hustdb_ha_init_main_conf(ngx_conf_t * cf, void * conf);
+static ngx_int_t ngx_http_hustdb_ha_postconfiguration(ngx_conf_t * cf);
 
 static ngx_http_request_item_t hustdb_ha_handler_dict[] =
 {
@@ -349,7 +349,6 @@ static ngx_command_t ngx_http_hustdb_ha_commands[] =
     APPEND_MCF_ITEM("fetch_connect_timeout", ngx_http_fetch_connect_timeout),
     APPEND_MCF_ITEM("fetch_send_timeout", ngx_http_fetch_send_timeout),
     APPEND_MCF_ITEM("fetch_read_timeout", ngx_http_fetch_read_timeout),
-    APPEND_MCF_ITEM("fetch_timeout", ngx_http_fetch_timeout),
     APPEND_MCF_ITEM("fetch_buffer_size", ngx_http_fetch_buffer_size),
     APPEND_MCF_ITEM("sync_port", ngx_http_sync_port),
     APPEND_MCF_ITEM("sync_status_uri", ngx_http_sync_status_uri),
@@ -362,7 +361,7 @@ static ngx_command_t ngx_http_hustdb_ha_commands[] =
 static ngx_http_module_t ngx_http_hustdb_ha_module_ctx = 
 {
     NULL, // ngx_int_t (*preconfiguration)(ngx_conf_t *cf);
-    NULL, // ngx_int_t (*postconfiguration)(ngx_conf_t *cf);
+    ngx_http_hustdb_ha_postconfiguration,
     ngx_http_hustdb_ha_create_main_conf,
     ngx_http_hustdb_ha_init_main_conf,
     NULL, // void * (*create_srv_conf)(ngx_conf_t *cf);
@@ -610,23 +609,6 @@ static char * ngx_http_fetch_read_timeout(ngx_conf_t * cf, ngx_command_t * cmd, 
     return NGX_CONF_OK;
 }
 
-static char * ngx_http_fetch_timeout(ngx_conf_t * cf, ngx_command_t * cmd, void * conf)
-{
-    ngx_http_hustdb_ha_main_conf_t * mcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_hustdb_ha_module);
-    if (!mcf || 2 != cf->args->nelts)
-    {
-        return "ngx_http_fetch_timeout error";
-    }
-    ngx_str_t * value = cf->args->elts;
-    mcf->fetch_timeout = ngx_parse_time(&value[1], 0);
-    if (NGX_ERROR == mcf->fetch_timeout)
-    {
-        return "ngx_http_fetch_timeout error";
-    }
-    // TODO: you can modify the value here
-    return NGX_CONF_OK;
-}
-
 static char * ngx_http_fetch_buffer_size(ngx_conf_t * cf, ngx_command_t * cmd, void * conf)
 {
     ngx_http_hustdb_ha_main_conf_t * mcf = ngx_http_conf_get_module_main_conf(cf, ngx_http_hustdb_ha_module);
@@ -808,7 +790,6 @@ static ngx_bool_t __init_fetch(ngx_conf_t * cf, ngx_http_hustdb_ha_main_conf_t *
         mcf->fetch_connect_timeout,
         mcf->fetch_send_timeout,
         mcf->fetch_read_timeout,
-        mcf->fetch_timeout,
         mcf->fetch_buffer_size,
         { 0, 0 },
         0
@@ -820,7 +801,9 @@ static ngx_bool_t __init_fetch(ngx_conf_t * cf, ngx_http_hustdb_ha_main_conf_t *
     return true;
 }
 
-char * ngx_http_hustdb_ha_init_main_conf(ngx_conf_t * cf, void * conf)
+static ngx_bool_t __init_addon(ngx_conf_t * cf, ngx_http_hustdb_ha_main_conf_t * mcf);
+
+static char * ngx_http_hustdb_ha_init_main_conf(ngx_conf_t * cf, void * conf)
 {
     ngx_http_hustdb_ha_main_conf_t * mcf = conf;
     if (!mcf)
@@ -833,59 +816,93 @@ char * ngx_http_hustdb_ha_init_main_conf(ngx_conf_t * cf, void * conf)
     // TODO: you can initialize mcf here
     g_mcf = mcf;
 
+    return NGX_CONF_OK;
+}
+
+static ngx_bool_t __init_addon(ngx_conf_t * cf, ngx_http_hustdb_ha_main_conf_t * mcf)
+{
     mcf->zone = ngx_http_addon_init_shm(cf, &mcf->hustdb_ha_shm_name, mcf->hustdb_ha_shm_size,
         sizeof(hustdb_ha_shctx_t), ngx_http_addon_init_shm_ctx, &ngx_http_hustdb_ha_module);
 
     hustdb_ha_init_peer_count(cf->pool);
-	if (!hustdb_ha_init_peer_dict())
-	{
-		return NGX_CONF_ERROR;
-	}
+    if (!hustdb_ha_init_peer_dict())
+    {
+        return false;
+    }
 
-	if (!hustdb_ha_init_peer_array(cf->pool))
-	{
-	    return NGX_CONF_ERROR;
-	}
+    if (!hustdb_ha_init_peer_array(cf->pool))
+    {
+        return false;
+    }
 
-	if (!hustdb_ha_init_log_dirs(&mcf->prefix, mcf->pool))
-	{
-	    return NGX_CONF_ERROR;
-	}
+    if (!hustdb_ha_init_log_dirs(&mcf->prefix, mcf->pool))
+    {
+        return false;
+    }
 
-	if (!__init_fetch(cf, mcf))
-	{
-	    return NGX_CONF_ERROR;
-	}
+    if (!__init_fetch(cf, mcf))
+    {
+        return false;
+    }
 
-	mcf->public_pem_full_path = ngx_http_get_conf_path(cf->cycle, &mcf->public_pem);
-    
-	ngx_str_t table_path = ngx_http_get_conf_path(cf->cycle, &mcf->hustdbtable_file);
-	if (!table_path.data)
-	{
-		return NGX_CONF_ERROR;
-	}
-	if (!hustdb_ha_init_table_str(&table_path, cf->pool))
-	{
-	    return NGX_CONF_ERROR;
-	}
-	HustDbHaTable table;
-	if (!cjson_load_hustdbhatable_from_file((const char *)table_path.data, &table))
-	{
-		return NGX_CONF_ERROR;
-	}
-	if (!table.json_has_table)
-	{
-	    return NGX_CONF_ERROR;
-	}
-	if (!hustdb_ha_build_table(&table, cf->pool))
-	{
-		return NGX_CONF_ERROR;
-	}
-	cjson_dispose_hustdbhatable(&table);
+    mcf->public_pem_full_path = ngx_http_get_conf_path(cf->cycle, &mcf->public_pem);
 
-	hustdb_ha_init_table_path(table_path, cf->pool);
+    ngx_str_t table_path = ngx_http_get_conf_path(cf->cycle, &mcf->hustdbtable_file);
+    if (!table_path.data)
+    {
+        return false;
+    }
+    if (!hustdb_ha_init_table_str(&table_path, cf->pool))
+    {
+        return false;
+    }
+    HustDbHaTable table;
+    if (!cjson_load_hustdbhatable_from_file((const char *)table_path.data, &table))
+    {
+        return false;
+    }
+    if (!table.json_has_table)
+    {
+        return false;
+    }
+    if (!hustdb_ha_build_table(&table, cf->pool))
+    {
+        return false;
+    }
+    cjson_dispose_hustdbhatable(&table);
 
-    return NGX_CONF_OK;
+    hustdb_ha_init_table_path(table_path, cf->pool);
+
+    return true;
+}
+
+static ngx_http_addon_upstream_peers_t addon_upstream_peers = { 0, 0 };
+
+static ngx_int_t ngx_http_hustdb_ha_postconfiguration(ngx_conf_t * cf)
+{
+    static ngx_str_t backend = ngx_string("backend");
+    ngx_bool_t rc = ngx_http_init_addon_backends(
+        ngx_http_conf_get_module_main_conf(cf, ngx_http_upstream_module), 
+        &backend, &addon_upstream_peers);
+    if (!rc)
+    {
+        return NGX_ERROR;
+    }
+    if (!__init_addon(cf, g_mcf))
+    {
+        return NGX_ERROR;
+    }
+    return NGX_OK;
+}
+
+ngx_http_upstream_rr_peers_t * ngx_http_get_backends()
+{
+    return addon_upstream_peers.peer;
+}
+
+size_t ngx_http_get_backend_count()
+{
+    return addon_upstream_peers.count;
 }
 
 void * ngx_http_get_addon_module_ctx(ngx_http_request_t * r)

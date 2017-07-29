@@ -28,6 +28,7 @@ In addition, `HA` cluster uses a distributed architecture design by incorporatin
 **You do not need to worry about the loss of data** as most of interfaces will persist data to disk.  
 
 * Support Binary Key-Value  
+* Support Version Clock
 
 ## Operation and Maintenance ##
 
@@ -35,8 +36,8 @@ In addition, `HA` cluster uses a distributed architecture design by incorporatin
 ![architect](res/architect.png)
 
 ### Deployment ###
-* Distributed KV storage  = HA（hustdb ha） + DB（hustdb）
-* Distributed Message Queue  = HA（hustmq ha） + DB（hustdb）
+* Distributed KV storage  : HA (hustdb ha) + DB (hustdb)
+* Distributed Message Queue  : HA (hustmq ha) + DB (hustdb)
 
 ## Database Engine ##
 ![hustdb](res/hustdb.png)
@@ -49,43 +50,24 @@ In addition, `HA` cluster uses a distributed architecture design by incorporatin
 * [libevhtp](https://github.com/ellzey/libevhtp)
 * [zlog](https://github.com/HardySimpson/zlog)
 
+## Platforms ##
+
+Tested platforms so far:
+
+Platform   | Description
+-----------|----------------------------------------------------------
+CentOS 6.x | kernel >= 2.6.32 (GCC 4.4.7)
+
+## Quick Start ##
+
+Read the [Quick Start](quickstart.md).
+
 ## Documents ##
 
-### Catalog ###
 * [hustdb](hustdb/doc/doc/en/index.md)
 * [hustmq](hustmq/doc/doc/en/index.md)
 
 Above includes detailed documents of design, deployments, `API` usage and test samples. You can refer quickly to common problems in `FAQ` part.
-
-### Guide ###
-* [hustdb](hustdb/doc/doc/en/guide/index.md)
-* [hustmq](hustmq/doc/doc/en/guide/index.md)
-
-### API manual ###
-* [hustdb](hustdb/doc/doc/en/api/index.md)
-* [hustmq](hustmq/doc/doc/en/api/index.md)
-
-### Advanced ###
-* [hustdb](hustdb/doc/doc/en/advanced/index.md)
-* [hustmq](hustmq/doc/doc/en/advanced/index.md)
-
-### FAQ ###
-* [hustdb](hustdb/doc/doc/en/appendix/faq.md)
-* [hustmq](hustmq/doc/doc/en/appendix/faq.md)
-
-## Table Content ##
-
-`hustdb`  
-　　`doc`  
-　　`db`  
-　　`ha`  
-　　`sync`    
-`hustmq`  
-　　`doc`  
-　　`ha`  
-
-`hustdb/ha` provides service for storage engine, could configured with multiple `worker`s.  
-`hustmq/ha` provides service for message queue, **can only configured with one `worker`**.
 
 ## Performance ##
 
@@ -101,7 +83,7 @@ Above includes detailed documents of design, deployments, `API` usage and test s
 
 * [redis 3.2.6](https://redis.io/)
 * [ssdb 1.9.4](http://ssdb.io)
-* [hustdb 1.5](https://github.com/Qihoo360/huststore)
+* [hustdb](https://github.com/Qihoo360/huststore)
 
 ### Tools ###
 
@@ -139,3 +121,7 @@ See more details in [here](benchmark/README.md)
 
 * XuRuibo（hustxrb, hustxrb@163.com)  
 * ChengZhuo（jobs, yao050421103@163.com)  
+
+## More ##
+
+- Nginx module development kit - [hustngx](https://github.com/jobs-github/hustngx)

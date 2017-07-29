@@ -18,12 +18,12 @@
 **返回范例:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Mon, 23 May 2016 10:37:27 GMT
+    Server: nginx/1.12.0
+    Date: Mon, 17 Apr 2017 10:37:27 GMT
     Content-Type: text/plain
     Content-Length: 0
     Connection: keep-alive
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

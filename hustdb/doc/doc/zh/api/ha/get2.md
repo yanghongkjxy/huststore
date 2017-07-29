@@ -19,8 +19,8 @@
 **返回范例1（值一致，版本一致）:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:05:31 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:05:31 GMT
     Content-Type: text/plain
     Content-Length: 13
     Connection: keep-alive
@@ -35,8 +35,8 @@
 **返回范例2（值一致，版本不一致）:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:06:06 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:06:06 GMT
     Content-Type: text/plain
     Content-Length: 13
     Connection: keep-alive
@@ -53,8 +53,8 @@
 **返回范例3（值不一致，版本一致）:**
 
     HTTP/1.1 409 Conflict
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:07:01 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:07:01 GMT
     Content-Type: text/plain
     Content-Length: 26
     Connection: keep-alive
@@ -71,8 +71,8 @@
 **返回范例4（值不一致，版本不一致）:**
 
     HTTP/1.1 409 Conflict
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:19:04 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:19:04 GMT
     Content-Type: text/plain
     Content-Length: 26
     Connection: keep-alive
@@ -88,6 +88,6 @@
 * `Version2`：`master2` 的值的版本号。
 * `Val-Offset`：两个值的分割点。参考 `返回范例3` 的解释。
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

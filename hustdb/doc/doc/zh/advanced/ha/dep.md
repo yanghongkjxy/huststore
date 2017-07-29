@@ -12,10 +12,6 @@
 	$ make 
 	$ sudo make install
 
-	$ sudo vi /etc/ld.so.conf
-	/usr/local/lib
-	$ sudo ldconfig
-
 ### libcurl ###
 
 `sync server` 同步时需要将数据 `POST` 到后端机。这里使用了开源的 `url` 传输库 [libcurl](https://curl.haxx.se)。
@@ -56,6 +52,6 @@
     $ make
     $ sudo make install
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

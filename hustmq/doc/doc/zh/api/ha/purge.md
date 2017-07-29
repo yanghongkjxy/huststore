@@ -15,6 +15,6 @@
 
     curl -i -X GET "http://localhost:8080/purge?queue=test_queue&priori=0"
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

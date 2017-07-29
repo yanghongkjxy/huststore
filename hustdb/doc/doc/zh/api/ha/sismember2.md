@@ -21,8 +21,8 @@
 **返回范例1（版本一致）:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:31:13 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:31:13 GMT
     Content-Type: text/plain
     Content-Length: 2
     Connection: keep-alive
@@ -35,8 +35,8 @@
 **返回范例2（版本不一致）:**
 
     HTTP/1.1 409 Conflict
-    Server: nginx/1.10.0
-    Date: Thu, 19 May 2016 10:33:09 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 10:33:09 GMT
     Content-Type: text/plain
     Content-Length: 5
     Connection: keep-alive
@@ -48,6 +48,6 @@
 * `Version1`：`master1` 的值的版本号。  
 * `Version2`：`master2` 的值的版本号。
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

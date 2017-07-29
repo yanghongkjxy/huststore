@@ -211,6 +211,11 @@ public:
     {
         return m_mdb_ok;
     }
+    
+    bool rdb_ok ( )
+    {
+        return m_rdb_ok;
+    }
 
     i_server_kv_t * get_storage ( )
     {
@@ -420,7 +425,7 @@ public:
                          size_t table_len,
                          const char * key,
                          size_t key_len,
-                         uint64_t score,
+                         int64_t score,
                          const char * host,
                          size_t host_len,
                          std::string * & rsp,
@@ -527,7 +532,9 @@ public:
                       size_t table_len,
                       const char * key,
                       size_t key_len,
-                      uint64_t score,
+                      int64_t score,
+                      std::string * & rsp,
+                      int & rsp_len,
                       int opt,
                       uint32_t & ver,
                       uint32_t ttl,
@@ -562,8 +569,8 @@ public:
     int hustdb_zrange (
                         const char * table,
                         size_t table_len,
-                        uint64_t min,
-                        uint64_t max,
+                        int64_t min,
+                        int64_t max,
                         int offset,
                         int size,
                         int start,

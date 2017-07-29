@@ -1,0 +1,207 @@
+#!/bin/bash
+set -e
+
+export PATH=/bin:/usr/bin:/usr/sbin:/sbin:${PATH}
+
+export HUSTSTORE_TOP=@@HUSTSTORE_TOP@@
+export PREFIX_3RD=@@PREFIX_3RD@@
+export PREFIX_HUSTDB=@@PREFIX_HUSTDB@@
+export PREFIX_HUSTDBSYNC=@@PREFIX_HUSTDBSYNC@@
+export PREFIX_HUSTDBHA=@@PREFIX_HUSTDBHA@@
+export PREFIX_HUSTMQ=@@PREFIX_HUSTMQ@@
+export PREFIX_HUSTMQHA=@@PREFIX_HUSTMQHA@@
+
+export topdir=$(dirname $(readlink -fn $0))
+
+help(){
+cat<<HELP
+usage:
+  $0 [option]
+
+[option]
+  --help show the manual
+
+  --module=3rd build and generate installation package for third-party libs.
+  It should be installed FIRST to build other modules.
+
+  --module=hustdb build and generate installation package for hustdb
+  --module=hustdbha build and generate installation package for hustdbha
+  --module=hustmq build and generate installation package for hustmq
+  --module=hustmqha build and generate installation package for hustmqha
+
+sample:
+  $0 --help
+  $0 --module=3rd,hustdb
+  $0 --module=3rd,hustdb,hustdbha
+  $0 --module=3rd,hustmq,hustmqha
+  $0
+HELP
+return 1
+}
+
+pkg_name(){
+  local srv=$1
+  printf 'elf_%s.tar.gz' ${srv}
+}
+
+mk_pkg(){
+  local dir=$1
+  shift
+  local srv
+  declare -a srv=("$@")
+  cd ${dir} && tar --exclude=DATA --exclude=EXPORT --exclude=LOG --exclude='*.log' --exclude='*.pid' \
+    -cvzf ${topdir}/$(pkg_name ${srv[0]}) -- ${srv[@]}
+}
+
+build_3rd(){
+  if [[ ! -d ${PREFIX_3RD} ]]; then
+    cd ${topdir}/third_party/ && bash -e build.sh;
+  fi
+  mk_pkg ${HUSTSTORE_TOP} 3rd
+}
+
+build_hustdb(){
+  cd ${topdir}/hustdb/db && make -j$(nproc) && make prefix=${PREFIX_HUSTDB} install ;
+  cp -v ${topdir}/hustdb/db/start.sh ${PREFIX_HUSTDB}
+  cp -v ${topdir}/hustdb/db/stop.sh ${PREFIX_HUSTDB}
+  install -m 0644 ${PREFIX_HUSTDB}/hustdb.conf.db ${PREFIX_HUSTDB}/hustdb.conf
+  mk_pkg ${HUSTSTORE_TOP} hustdb
+}
+
+build_hustdbha(){
+  cd ${topdir}/hustdb/sync && make -j$(nproc) && make prefix=${PREFIX_HUSTDBSYNC} install ;
+  cp -v ${topdir}/hustdb/sync/start.sh ${PREFIX_HUSTDBSYNC}
+  cp -v ${topdir}/hustdb/sync/stop.sh ${PREFIX_HUSTDBSYNC}
+
+  cd ${topdir}/hustdb/ha/nginx  && \
+    bash -e ./Config.sh && \
+    make -j$(nproc)     && \
+    make install   && \
+      echo "ok" > ${PREFIX_HUSTDBHA}/html/status.html && \
+      cp ../upgrade.sh ${PREFIX_HUSTDBHA}/sbin/ && \
+      cp conf/genconf.py ${PREFIX_HUSTDBHA}/conf/ && \
+      cp conf/nginx.json ${PREFIX_HUSTDBHA}/conf/ && \
+      cp conf/gen_table.py ${PREFIX_HUSTDBHA}/conf/
+  cp -v ${topdir}/hustdb/ha/start.sh ${PREFIX_HUSTDBHA}/sbin/
+  cp -v ${topdir}/hustdb/ha/stop.sh ${PREFIX_HUSTDBHA}/sbin/
+
+  mk_pkg ${HUSTSTORE_TOP} hustdbha  hustdbsync
+
+}
+
+build_hustmq(){
+  if [[ ! -x ${PREFIX_HUSTDB}/hustdb ]] ; then
+    build_hustdb
+  fi
+
+  test -d ${PREFIX_HUSTMQ} || mkdir ${PREFIX_HUSTMQ}
+  cp -a ${PREFIX_HUSTDB}/hustdb ${PREFIX_HUSTMQ}/
+  cp -a ${PREFIX_HUSTDB}/hustdb.conf* ${PREFIX_HUSTMQ}/
+  cp -a ${PREFIX_HUSTDB}/*.sh ${PREFIX_HUSTMQ}/
+  install -m 0644 ${PREFIX_HUSTMQ}/hustdb.conf.mq ${PREFIX_HUSTMQ}/hustdb.conf
+  mk_pkg ${HUSTSTORE_TOP} hustmq
+}
+
+build_hustmqha(){
+  cd ${topdir}/hustmq/ha/nginx && \
+    bash -e ./Config.sh && \
+    make -j$(nproc) && \
+    make install && \
+      echo "ok" > ${PREFIX_HUSTMQHA}/html/status.html && \
+      cp ../upgrade.sh ${PREFIX_HUSTMQHA}/sbin/ && \
+      cp conf/genconf.py ${PREFIX_HUSTMQHA}/conf/ && \
+      cp conf/nginx.json ${PREFIX_HUSTMQHA}/conf/
+  cp -v ${topdir}/hustmq/ha/start.sh ${PREFIX_HUSTMQHA}/sbin/
+  cp -v ${topdir}/hustmq/ha/stop.sh ${PREFIX_HUSTMQHA}/sbin/
+
+  mk_pkg ${HUSTSTORE_TOP} hustmqha
+}
+
+make_clean(){
+  set +e
+  for prjdir in \
+    ${topdir}/hustdb/db \
+    ${topdir}/hustdb/sync \
+    ${topdir}/hustdb/ha/nginx \
+    ${topdir}/hustmq/ha/nginx
+  do
+    echo "#### Cleaning ${prjdir} ####"
+    cd ${prjdir} ; make clean
+  done
+  set -e
+}
+
+
+
+if ! options=$(getopt -o hcm: -l help,clean,module: -- "$@")
+then
+    help
+    exit 1
+fi
+
+eval set -- $options
+export MODULES=''
+export CLEAN=false
+
+while [ $# -gt 0 ]
+do
+    case $1 in
+    -h|--help) help; exit 1 ;;
+    -c|--clean) CLEAN=true ;;
+    -m|--module) MODULES="$2" ; shift;;
+    (--) shift; break;;
+    (-*) echo "$0: error - unknown option $1" 1>&2; help; exit 1;;
+    (*) break;;
+    esac
+    shift
+done
+
+if [[ ${CLEAN} == true ]]; then
+  make_clean
+  exit 0
+fi
+
+if [[ "x" == x"${MODULES}" ]]; then
+  MODULES='3rd,hustdb,hustdbha,hustmq,hustmqha'
+fi
+
+if [[ ! -d ${HUSTSTORE_TOP} ]]; then
+  echo "Error: Plese ensure ${HUSTSTORE_TOP} exists, and you have permission to change it."
+  echo "Tips: maybe you need to do this, before executing $0"
+  echo ""
+  echo "      sudo mkdir -p ${HUSTSTORE_TOP}"
+  echo "      sudo chown -R myOWNER:myGROUP ${HUSTSTORE_TOP}"
+  echo ""
+  exit 1
+fi
+
+declare -a exec_cmds=()
+
+OLDIFS=$IFS
+IFS=','
+for mod in ${MODULES}; do
+  case $mod in
+    3rd )
+      exec_cmds=(build_3rd ${exec_cmds[@]})
+      ;;
+    hustdb )
+      exec_cmds+=(build_hustdb)
+      ;;
+    hustdbha )
+      exec_cmds+=(build_hustdbha)
+      ;;
+    hustmq )
+      exec_cmds+=(build_hustmq)
+      ;;
+    hustmqha )
+      exec_cmds+=(build_hustmqha)
+      ;;
+  esac
+done
+IFS=${OLDIFS}
+
+for cmd in ${exec_cmds[@]}; do
+  eval $cmd
+done
+
+echo "Success."

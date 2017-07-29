@@ -17,8 +17,8 @@
 **返回样例:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Tue, 29 Mar 2016 08:44:31 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 08:44:31 GMT
     Content-Type: text/plain
     Content-Length: 2
     Connection: keep-alive
@@ -40,14 +40,14 @@
 **返回样例:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Tue, 29 Mar 2016 08:53:48 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 08:53:48 GMT
     Content-Type: text/plain
     Content-Length: 0
     Connection: keep-alive
     
 更加详尽的测试代码可参考 `hustmq/ha/nginx/test/do_post.py`
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

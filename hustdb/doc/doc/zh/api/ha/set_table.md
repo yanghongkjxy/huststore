@@ -29,6 +29,6 @@
 
 请参考脚本 `hustdb/ha/nginx/test/set_table.py`
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

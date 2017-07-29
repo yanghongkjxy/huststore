@@ -10,7 +10,7 @@
 
 **使用范例A:**
 
-    curl -i -X GET "http://localhost:8085/hustmq/worker?queue=test_queue"
+    curl -i -X GET "http://localhost:8085/hustmq/wrker?queue=test_queue"
 
 **结果范例A1:**
 
@@ -20,6 +20,6 @@
 
 	[{"w":"s1.bjdt|9998","t":1458815637},{"w":"s1.bjdt|9999","t":1458815632}]
 
-[上一级](../hustmq.md)
+[上一页](../hustmq.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

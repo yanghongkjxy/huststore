@@ -38,6 +38,10 @@ pid_file_t::pid_file_t(const std::string& pid_file)
 
 pid_file_t::~pid_file_t()
 {
+    if (!fp_)
+    {
+        return;
+    }
     fclose(fp_);
     remove(pid_file_.c_str());
 }
@@ -152,8 +156,11 @@ bool run_server(const std::string& pid_file)
     pid_file_t pid(pid_file);
     if (pid.error())
     {
+        LOG_ERROR ("[hustdb_network]create pid file failed");
         return false;
     }
+
+    LOG_INFO ("[hustdb_network]db initializing...");
 
     hustdb_t db;
     if (!db.open())
@@ -161,6 +168,8 @@ bool run_server(const std::string& pid_file)
         LOG_ERROR ("[hustdb_network]db open failed");
         return -1;
     }
+
+    LOG_INFO ("[hustdb_network]db init success");
 
     server_conf_t cf = db.get_server_conf();
 
@@ -185,9 +194,11 @@ bool run_server(const std::string& pid_file)
     ctx.ip_allow_map = &ip_allow_map;
     ctx.db = &db;
 
+    LOG_INFO ("[hustdb_network]start service");
+
     if (!hustdb_loop(&ctx))
     {
-        LOG_INFO ("[hustdb_network]hustdb_loop error");
+        LOG_ERROR ("[hustdb_network]hustdb_loop error");
     }
 
     LOG_INFO ("[hustdb_network]hustdb closed");

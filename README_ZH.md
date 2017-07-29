@@ -21,7 +21,8 @@
 `huststore` 使用 `http` 作为通用协议，因此客户端的实现不限制于语言。  
 * 持久化  
 几乎所有的接口都会将数据持久化到硬盘，因此 **你不用再担心数据的丢失**。  
-* 支持二进制的 `key-value`
+* 支持二进制的 `key-value`  
+* 支持 `Version Clock`  
 
 ## 运维 ##
 
@@ -29,11 +30,19 @@
 ![architect](res/architect.png)
 
 ### 部署 ###
-* 分布式KV存储 = HA（hustdb ha） + DB（hustdb）
-* 分布式消息队列 = HA（hustmq ha） + DB（hustdb）
+* 分布式KV存储 : HA (hustdb ha) + DB (hustdb)
+* 分布式消息队列 : HA (hustmq ha) + DB (hustdb)
 
 ## 存储引擎 ##
 ![hustdb](res/hustdb.png)
+
+## 平台 ##
+
+目前测试通过的平台包括：
+
+平台       | 描述
+-----------|----------------------------------------------------------
+CentOS 6.x | 内核版本 >= 2.6.32 (GCC 4.4.7)
 
 ## 依赖 ##
 * [cmake](https://cmake.org/download/)
@@ -43,45 +52,16 @@
 * [libevhtp](https://github.com/ellzey/libevhtp)
 * [zlog](https://github.com/HardySimpson/zlog)
 
+## 快速入门 ##
+
+请查看[这里](quickstart_zh.md)。
+
 ## 文档 ##
 
-### 目录 ###
 * [hustdb](hustdb/doc/doc/zh/index.md)
 * [hustmq](hustmq/doc/doc/zh/index.md)
 
 以上包含了 `huststore` 从设计、部署、`API` 到测试样例的详细文档，并提供了 `FAQ` 对常见问题进行快速检索。
-
-### 快速入门 ###
-* [hustdb](hustdb/doc/doc/zh/guide/index.md)
-* [hustmq](hustmq/doc/doc/zh/guide/index.md)
-
-### API ###
-* [hustdb](hustdb/doc/doc/zh/api/index.md)
-* [hustmq](hustmq/doc/doc/zh/api/index.md)
-
-### 进阶 ###
-* [hustdb](hustdb/doc/doc/zh/advanced/index.md)
-* [hustmq](hustmq/doc/doc/zh/advanced/index.md)
-
-### FAQ ###
-* [hustdb](hustdb/doc/doc/zh/appendix/faq.md)
-* [hustmq](hustmq/doc/doc/zh/appendix/faq.md)
-
-## 目录 ##
-
-项目目录结构如下：
-
-`hustdb`  
-　　`doc`  
-　　`db`  
-　　`ha`  
-　　`sync`    
-`hustmq`  
-　　`doc`  
-　　`ha`  
-
-`hustdb/ha` 服务于存储引擎，可以配置多个 `worker`。  
-`hustmq/ha` 服务于消息队列，**只能配置单个 `worker`**。
 
 ## 性能 ##
 
@@ -97,7 +77,7 @@
 
 * [redis 3.2.6](https://redis.io/)
 * [ssdb 1.9.4](http://ssdb.io)
-* [hustdb 1.5](https://github.com/Qihoo360/huststore)
+* [hustdb](https://github.com/Qihoo360/huststore)
 
 ### 测试工具 ###
 
@@ -135,3 +115,7 @@ C2000-V1024  |2000        |1024
 
 * XuRuibo（hustxrb，hustxrb@163.com)  
 * ChengZhuo（jobs，yao050421103@163.com)  
+
+## 更多 ##
+
+- Nginx 模块开发工具包 - [hustngx](https://github.com/jobs-github/hustngx)

@@ -17,8 +17,8 @@
 **返回样例:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Thu, 31 Mar 2016 03:14:49 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 03:14:49 GMT
     Content-Type: text/plain
     Content-Length: 72
     Connection: keep-alive
@@ -32,6 +32,6 @@
 * free_tasks: 剩余可被分配的任务数量，每来一个 [`do_get`](do_get.md) 请求，该值都会减一，相应的 `unassigned_tasks` 或者 `assigned_tasks` 会加一
 * total: 分配的任务缓存总数
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)

@@ -15,14 +15,14 @@
 **返回值范例:**
 
     HTTP/1.1 200 OK
-    Server: nginx/1.10.0
-    Date: Tue, 07 Jun 2016 03:25:18 GMT
+    Server: nginx/1.12.0
+    Date: Tue, 18 Apr 2017 03:25:18 GMT
     Content-Type: text/plain
     Content-Length: 3
     Connection: keep-alive
     
     ok
 
-[上一级](../ha.md)
+[上一页](../ha.md)
 
-[根目录](../../index.md)
+[回首页](../../index.md)
